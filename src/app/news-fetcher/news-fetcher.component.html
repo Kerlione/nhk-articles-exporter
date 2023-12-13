@@ -1,0 +1,57 @@
+<section class="hero">
+    <div class="hero-body">
+        <p class="hero-title">Load vocabulary from NHK News</p>
+        <div class="field">
+            <label for="newsUrl" class="label">Link to article: </label>
+            <input id="newsUrl" type="text" [formControl]="newsUrl" class="input" [placeholder]="nhkNewsPlaceholder">
+            @if (newsUrl.invalid && (newsUrl.dirty || newsUrl.touched)) {
+            @if(newsUrl.errors?.['required']){
+            <p class="help is-danger">
+                URL is required.
+            </p>
+            }
+            @if(newsUrl.errors?.['minlength']){
+            <p class="help is-danger">
+                URL must be at least characters long.
+            </p>
+            }
+            @if(newsUrl.errors?.['malformedUrl']){
+            <p class="help is-danger">
+                URL is not of correct format.
+            </p>
+            }
+            @if(newsUrl.errors?.['forbiddenUrl']){
+            <p class="help is-danger">
+                Entered URL is not allowed.
+            </p>
+            }
+            }
+        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button [disabled]="newsUrl.invalid" (click)="loadNewsArticle()" class="button">Load</button>
+            </div>
+        </div>
+
+        <section class="section is-medium" *ngIf="article$ | async article">
+            <h1 class="title">Article</h1>
+
+            <h2 class="subtitle" *ngFor="let paragraph of (article$ | async)?.bodyParagraphs">
+                {{ paragraph }}
+            </h2>
+
+            <button class="button" (click)="hideFurigana()">Hide Furigana</button>
+
+            <div *ngFor="let vocabulary of (article$ | async)?.vocabulary">
+                <h2 class="vocabulary-name" [textContent]="(article$ | async)?.getTermName(vocabulary)"></h2>
+
+                <ol>
+                    <li *ngFor="let definition of (article$ | async)?.getDefinitionsForKey(vocabulary)"
+                        [innerHTML]="definition.def">
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+    </div>
+</section>
