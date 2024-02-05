@@ -12,16 +12,21 @@ export class NewsParsingService {
 
   processResponses(article: string, dictionary: DictionaryResponse) {
     const parsedDocument = parse(article);
+    parsedDocument.querySelectorAll('rt').forEach((x) => x.remove());
+    const paragraphs = parsedDocument.querySelectorAll(
+      '#js-article-body p'
+    );
 
-    const paragraphs = parsedDocument.querySelectorAll('#js-article-body p');
     const vocabularyInArticle = [
       ...new Set(parsedDocument.querySelectorAll('a.dicWin').map((x) => x.id)),
     ];
-    
-    return of(new Article(
-      paragraphs.map((x) => x.textContent),
-      vocabularyInArticle,
-      dictionary
-    ));
+
+    return of(
+      new Article(
+        paragraphs.map((x) => x.textContent),
+        vocabularyInArticle,
+        dictionary
+      )
+    );
   }
 }
